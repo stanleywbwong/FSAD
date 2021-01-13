@@ -12,6 +12,7 @@ def check_prime(num):
     for i in range(2, int(floor(sqrt(num)))+1):
         if num % i == 0:
             return False
+
     return True
 
 # basic driver code to test
