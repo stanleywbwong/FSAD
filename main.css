@@ -59,6 +59,11 @@ td.empty {
     font-size: 16px;
 }
 
+.menu-item a {
+    text-decoration: none;
+    color: white;
+}
+
 .menu-item:hover {
     background-color: rgb(48, 54, 59);
     cursor: pointer;
@@ -99,4 +104,9 @@ td.empty {
 .dropdown-text {
     position: relative;
     left: 23px;
+}
+
+.dropdown-text a {
+    text-decoration: none;
+    color: white;
 }
