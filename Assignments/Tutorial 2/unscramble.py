@@ -27,7 +27,6 @@ def unscramble(text):
                 unscrambled_words.append(line.strip())
     
     # note these are sorted by nature of the sorted word_list
-    print(unscrambled_words)
     return unscrambled_words
 
     # Note: we can probably achieve better runtime by processing each line 
