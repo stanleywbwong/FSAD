@@ -1,19 +1,16 @@
 def my_sort(num_list):
-    mid = len(num_list)//2
-    left_list = merge_sort(num_list[:mid])
-    right_list = merge_sort(num_list[mid:])
-    return merge(left_list, right_list)
-
-def merge_sort(nums):
-    # base case
-    if not nums or len(nums) == 1:
-        return nums
+    # merge sort base case
+    if not num_list or len(num_list) == 1:
+        return num_list
     
-    mid = len(nums)//2
-    left = merge_sort(nums[:mid])
-    right = merge_sort(nums[mid:])
+    mid = len(num_list)//2
 
-    return merge(left, right)
+    # recursive calls
+    left_list = my_sort(num_list[:mid])
+    right_list = my_sort(num_list[mid:])
+
+    # recombine sorted lists
+    return merge(left_list, right_list)
     
 def merge(list1, list2):
     """ Utility for merging two sorted lists """
@@ -38,7 +35,7 @@ def merge(list1, list2):
     return merged
 
 if __name__ == "__main__":
-    assert merge_sort([]) == []
-    assert merge_sort([5]) == [5]
-    assert merge_sort([3,2,4,8,7,10,1]) == [1,2,3,4,7,8,10]
-    assert merge_sort([-666,420,1729,42,-10,0,1296,31]) == [-666,-10,0,31,42,420,1296,1729]
+    assert my_sort([]) == []
+    assert my_sort([5]) == [5]
+    assert my_sort([3,2,4,8,7,10,1]) == [1,2,3,4,7,8,10]
+    assert my_sort([-666,420,1729,42,-10,0,1296,31]) == [-666,-10,0,31,42,420,1296,1729]
