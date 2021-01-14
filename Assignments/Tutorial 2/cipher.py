@@ -43,6 +43,6 @@ if __name__ == "__main__":
     assert decrypt(encrypt("apple", 1), 1) == "apple"
     assert decrypt(encrypt("zebra", 1), 1) == "zebra"
     assert decrypt(encrypt("This is some text", 10), 10) == "This is some text"
-    with open("mobydick.txt", 'r') as f:
+    with open("moby_dick.txt", 'r') as f:
         text = f.read() # must store copy of text to avoid calling f.read() twice
         assert decrypt(encrypt(text, 13), 13) == text
