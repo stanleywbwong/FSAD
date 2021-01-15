@@ -1,235 +1,139 @@
-'''
-Created on May 28, 2020
+# Developed by Stan
 
-@author: Ron
-'''
-import discord
-from discord.ext import commands, tasks
-from itertools import cycle
-from discord.utils import get
-import youtube_dl
 import os
-import random
 
-token = 'NzE1Mzc0OTk2MjEzNzI3MzYz.Xs_ggg.HQG0afQXizWV6LqyQpkaKRX6Sbw'
-client = commands.Bot(command_prefix='.')
-status = cycle(['Status 1', 'Status 2'])
+import discord
+import time
+from discord.ext import commands
+from dotenv import load_dotenv
 
-players = {}
+# Load in environment variables, set up client
+load_dotenv()
+TOKEN = os.getenv('DISCORD_TOKEN').strip('{}')
+GUILD = os.getenv('DISCORD_GUILD').strip('{}')
 
+intents = discord.Intents.all()
+bot = commands.Bot(command_prefix='.wongbot', intents=intents)
 
-@client.event
-async def on_command_error(ctx, error):
-    if isinstance(error, commands.CommandNotFound):
-        await ctx.send('Invalid command used.')
-@client.event
+# Initialize currency system
+user_amounts = {}
+
+# Runs once bot is connected and available.
+@bot.event
 async def on_ready():
-#     await client.change_presence(status = discord.Status.idle, activity = discord.Game('Hiya!'))
-    print('Bot online.')
+    print(f'{bot.user} has connected to Discord!')
 
-@tasks.loop(seconds = 10)
-async def change_status():
-    change_status.start()
-    await client.change_presence(status = discord.Status.idle, activity = discord.Game(next(status)))
-    
-    
-@client.event 
-async def on_member_join(member):
-    print(f'{member} has joined a server.')
-    
+    guild = discord.utils.get(bot.guilds, name=GUILD)
 
-@client.event 
-async def on_member_remove(member):
-    print(f'{member} has left a server.')
-    
+    print(
+        f'{bot.user} is connected to the following guild:\n'
+        f'{guild.name}(id: {guild.id})'
+    )
 
-@client.command()
-async def ping(ctx):
-    await ctx.send(f'Pong! Ping: {round(client.latency * 1000)}ms.')
-
-
-@client.command()
-async def shutdown(ctx):
-    await ctx.bot.logout()
-    
-@client.command()
-async def clear(ctx, amount = 2):
-    await ctx.channel.purge(limit = amount)
-
-@clear.error
-async def clear_error(ctx, error):
-    if isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send('Please specify the amount of messages to clear.')
-    
-@client.command(aliases=['8ball', 'test'])
-# asterisk allows me to take in multiple parameters
-async def _8ball(ctx, *, question):
-    responses = ["It is certain.",
-                "It is decidedly so.",
-                "Without a doubt.",
-                "Yes - definitely.",
-                "You may rely on it.",
-                "As I see it, yes.",
-                "Most likely.",
-                "Outlook good.",
-                "Yes.",
-                "Signs point to yes.",
-                "Reply hazy, try again.",
-                "Ask again later.",
-                "Better not tell you now.",
-                "Cannot predict now.",
-                "Concentrate and ask again.",
-                "Don't count on it.",
-                "My reply is no.",
-                "My sources say no.",
-                "Outlook not so good.",
-                "Very doubtful."]
-    await ctx.send(f'Question: {question}\nAnswer: {random.choice(responses)}')
-    
-    
-@client.command()
-#asterisk - all parameters after member and reason will be added onto reason
-async def kick(ctx, member : discord.Member, * , reason = None):
-    await member.kick(reason = reason)
-    
-@client.command()
-async def ban(ctx, member : discord.Member, * , reason = None):
-    await member.ban(reason = reason)
-    await ctx.send(f'Banned {member.mention}')    
-
-@client.command()
-# Ron#1234 where member_name is Ron and member_discriminator is 1234
-async def unban(ctx, *, member):
-    #guild is server, ban entries pulled from guild
-    banned_users = await ctx.guild.bans()
-    member_name, member_discriminator = member.split('#')
-    
-    for ban_entry in banned_users:
-        user = ban_entry.user
-        if (user.name, user.discriminator) == (member_name, member_discriminator):
-            await ctx.guild(unban(user))
-            await ctx.send(f'Unbanned {user.mention}') 
-
-@client.command()
-async def join(ctx):
-    global voice
-    channel = ctx.message.author.voice.channel
-    voice = get(client.voice_clients, guild = ctx.guild)
-    
-    if voice and voice.is_connected():
-        await voice.move_to(channel)
-    else: 
-        voice = await channel.connect()
-        print(f"The bot has connected to {channel}\n")
-
-#     await voice.disconnect()
-# 
-#     if voice and voice.is_connected():
-#         await voice.move_to(channel)
-#     else:
-#         voice = await channel.connect()
-#         print(f"The bot has connected to {channel}\n")
-
-
-@client.command()
-async def leave(ctx):
-    channel = ctx.message.author.voice.channel
-    voice = get(client.voice_clients, guild = ctx.guild)
-    if voice and voice.is_connected():
-        await voice.disconnect()
-        print(f'Bot disconnected from {channel}\n')
-        await ctx.send(f'Left {channel}')
-    else:
-        print('Bot was not in voice channel')
-        await ctx.send("Wasn't in a voice channel")
-        
-    
-    
-            
-@client.command()
-async def play (ctx,url):
-  
-    song_there = os.path.isfile("song.mp3")
     try:
-        if song_there:
-            os.remove("song.mp3")
-            print("Removed old song file")
-    except PermissionError:
-        print("Trying to delete song file, but it's being played")
-        await ctx.send("Music's already playing")
+        with open('user_amounts.json') as f:
+            user_amounts = json.load(f)
+    except FileNotFoundError:
+        print("Could not load user_amounts.json")
+        user_amounts = {}
+
+    # members = '\n - '.join([member.name for member in guild.members])
+    # print(f'Guild Members:\n - {members}')
+
+@bot.event
+async def on_member_join(member):
+    guild = discord.utils.get(bot.guilds, name=GUILD)
+    general = discord.utils.get(guild.channels, name='general')
+    print(general.name)
+    await general.send(
+        f'{member.name} HAS BEEN ASSIMILATED.'
+    )
+
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.error.CheckFailure):
+        await ctx.send('WHERE TF ARE YOUR PERMISSIONS BOYO')
+    if isinstance(error, commands.CommandNotFound):
+        await ctx.send('INVALID COMMAND DIPSHIT.')
+
+@bot.event
+async def on_message(message):
+    if message.author == bot.user:
         return
+    
+    if message.content == 'wongbot awaken':
+        await message.channel.send(f'WONGBOT ACTIVATED')
+    
+    if 'casino' in message.content:
+        await message.channel.send(f'CASINO UNDER DEVELOPMENT')
 
-#     await ctx.send("Loading your song...")
-    await ctx.send("Loading your anime OSTs...")
+    if 'anime' in message.content:
+        await message.channel.send(f'NO ANIME ALLOWED. BAN COMMENCING IN 10 SECONDS')
+        guild = discord.utils.get(bot.guilds, name=GUILD)
+        offender = discord.utils.get(guild.members, name=message.author)
+        for i in range(10, -1, -1):
+            await message.channel.send(content=str(i), delete_after=1)
+            time.sleep(1)
+        await message.channel.send(f"TIME'S UP, GOODBYE WEEB", delete_after=2)
 
-    voice = get(client.voice_clients, guild=ctx.guild)
+        #await guild.ban(message.author, reason='WEEB DETECTED', delete_message_days=0)
+        await guild.kick(message.author)
+        #await offender.edit(voice_channel=None)
+        await message.channel.send(f'{message.author} REMOVED, GOOD WORK TEAM')
 
-    ydl_opts = {
-        'format': 'bestaudio/best',
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '192',
-        }],
-    }
+    if 'catgirl' in message.content:
+        await message.channel.send(f'NO CATGIRLS ALLOWED. BAN COMMENCING IN 10 SECONDS')   
 
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        print("Downloading audio now\n")
-        ydl.download([url])
 
-    for file in os.listdir("./"):
-        if file.endswith(".mp3"):
-            name = file
-            print(f"Renamed File: {file}\n")
-            os.rename(file, "song.mp3")
-            break
+############################
+##### ECONOMY COMMANDS #####
+############################
 
-    voice.play(discord.FFmpegPCMAudio("song.mp3"), after=lambda e: print("Song done!"))
-    voice.source = discord.PCMVolumeTransformer(voice.source)
-    voice.source.volume = 1
-
-#new name used for display
-    nname = name.rsplit("-", 2)
-    await ctx.send(f"Playing: {nname[0]}")
-    print("playing\n")
-
-@client.command()
-async def stop(ctx):
-    voice = get(client.voice_clients, guild=ctx.guild)
-
-    if voice and voice.is_playing():
-        print("Music stopped")
-        voice.stop()
-        await ctx.send("Music stopped.")
+@bot.command(pass_context=True)
+async def balance(ctx):
+    id = str(ctx.message.author.id)
+    if id in user_amounts:
+        await ctx.send("BALANCE: {} STANBUCKS".format(user_amounts[id]))
     else:
-        print("No music playing failed to stop")
-        await ctx.send("There's no music playing. ")
+        await ctx.send("NO ACCOUNT. REGISTER WITH '.WONGBOT REGISTER'")
 
-@client.command()
-async def pause(ctx):
-    voice = get(client.voice_clients, guild=ctx.guild)
-
-    if voice and voice.is_playing():
-        print("Music paused")
-        voice.pause()
-        await ctx.send("Music paused")
+@bot.command(pass_context=True)
+async def register(ctx):
+    id = str(ctx.message.author.id)
+    if id not in user_amounts:
+        user_amounts[id] = 10,000
+        await ctx.send("REGISTER SUCCESSFUL")
+        _save()
     else:
-        print("Music not playing failed pause")
-        await ctx.send("Music not playing...are you good?")
-        
-        
-@client.command()
-async def resume(ctx):
-    voice = get(client.voice_clients, guild=ctx.guild)
+        await ctx.send("YOU ALREADY HAVE AN ACCOUNT NICE TRY")
 
-    if voice and voice.is_paused():
-        print("Resumed music")
-        voice.resume()
-        await ctx.send("Resumed music")
+@bot.command(pass_context=True)
+async def transfer(ctx, amount: int, other: discord.Member):
+    primary_id = str(ctx.message.author.id)
+    other_id = str(other.id)
+    if primary_id not in user_amounts:
+        await ctx.send("NO ACCOUNT. REGISTER WITH '.WONGBOT REGISTER'")
+    elif other_id not in amounts:
+        await ctx.send("OTHER PARTY DOES NOT HAVE AN ACCOUNT.")
+    elif user_amounts[primary_id] < amount:
+        await ctx.send("NO OVERDRAFTING GTFO")
     else:
-        print("Music is not paused")
-        await ctx.send("Music not paused, don't waste my time.")
+        user_amounts[primary_id] -= amount
+        user_amounts[other_id] += amount
+        await ctx.send("TRANSACTION COMPLETED")
+    _save()
 
-        
-# insert token    
-client.run(token)
+def _save():
+    with open('user_amounts.json', 'w+') as f:
+        json.dump(user_amounts, f)
+
+@bot.command()
+async def save():
+    _save()
+
+@bot.command(name='bet', help='bet stanbucks against ur friends')
+async def bet(ctx):
+    pass
+
+# Begin bot session
+bot.run(TOKEN)
