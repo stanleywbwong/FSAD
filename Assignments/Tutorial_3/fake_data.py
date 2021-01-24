@@ -43,7 +43,7 @@ posts = [
     },
     {
         "handle": "melba", 
-        "text": "Peanut butter is my favorite snack!", 
+        "text": "Peanut butter is my favorite snack! @chucky @rose", 
         "liked": ["rose", "chucky", "melba"],
         "time": "01/13/2021, 12:54:33"
     },

@@ -39,6 +39,7 @@ def format_time(post, format="%m/%d/%Y, %H:%M:%S"):
 
 @app.template_filter('like_filter')
 def format_likes(post):
+    """Formats likers of a post to an appropriate string to display"""
     likes = post["liked"]
     if not likes:
         return ""
