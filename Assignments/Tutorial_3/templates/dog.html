@@ -32,9 +32,9 @@
               <p>
                 <strong>{{ dog["name"] }}</strong> 
                 <small>@{{dog['handle']}}</small> 
-                <small>{{ format_time(post) }}</small>
+                <small>{{ post|datetime_filter }}</small>
                 <br>
-                {{post['text']}}
+                {{ post['text'] }}
               </p>
             </div>
             <nav class="level is-mobile">
@@ -47,7 +47,7 @@
                 <div class="level-item">
                   <a> <!--add modal to this link-->
                     <span class="has-text-weight-normal">
-                      {{ format_likes(post) }}
+                      {{ post|like_filter }}
                     </span>
                   </a>
                 </div>

@@ -26,7 +26,7 @@
                   <strong>{{ get_dog_by_handle(post['handle'])['name'] }}</strong>
                 </a> 
                 <small>@{{ post['handle'] }}</small> 
-                <small>{{ format_time(post) }}</small>
+                <small>{{ post|datetime_filter }}</small>
                 <br>
                 {{ post['text'] }}
               </p>
@@ -41,7 +41,7 @@
                 <div class="level-item">
                   <a> <!--add modal to this link-->
                     <span class="has-text-weight-normal">
-                      {{ format_likes(post) }}
+                      {{ post|like_filter }}
                     </span>
                   </a>
                 </div>
