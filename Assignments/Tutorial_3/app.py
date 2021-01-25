@@ -6,14 +6,16 @@ app = Flask(__name__, template_folder="templates", static_url_path='/static')
 @app.route('/')
 def feed():
     return render_template('feed.html', 
-                            posts=posts, 
+                            posts=posts,
+                            handles=[post["handle"] for post in posts],
                             get_dog_by_handle=get_dog_by_handle)
     
 @app.route('/dog/<string:handle>')
 def dog(handle):
     dog = get_dog_by_handle(handle)
     return render_template('dog.html', 
-                            dog=dog, 
+                            dog=dog,
+                            handles=[post["handle"] for post in posts],
                             posts=get_posts_by_handle(handle))
 
 # Register filters to use rather than passing functions into render_template function

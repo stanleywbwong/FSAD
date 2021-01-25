@@ -25,7 +25,7 @@ dogs = [
 posts = [
     {
         "handle": "melba", 
-        "text": "I'm so excited to move to California!", 
+        "text": "I'm so excited to move to California! @rose @invalid", 
         "liked": ["chucky", "rose"],
         "time": "01/22/2021, 20:47:05"
     },

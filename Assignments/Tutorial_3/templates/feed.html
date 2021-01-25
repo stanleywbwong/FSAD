@@ -29,7 +29,7 @@
                 <small>{{ post|datetime_filter }}</small>
                 <br>
                 {% for word in post['text'].split(' ') %}
-                  {% if word[0] == '@' %}
+                  {% if word[0] == '@' and word[1:] in handles %}
                     <a href="{{ url_for('dog', handle=word[1:]) }}">
                       @{{ word[1:] }}
                     </a>
