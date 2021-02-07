@@ -12,8 +12,7 @@ def feed():
     handles = set([post["Handle"] for post in posts])
     return render_template('feed.html', 
                             posts=posts,
-                            handles=handles,
-                            get_dog_by_handle=get_dog_by_handle)
+                            handles=handles)
     
 @app.route('/dog/<string:handle>')
 def dog(handle):
@@ -22,8 +21,8 @@ def dog(handle):
     handles = set([post["Handle"] for post in posts])
     return render_template('dog.html',
                             dog=dog,
-                            handles=handles,
-                            posts=posts)
+                            posts=posts,
+                            handles=handles)
 
 # Register filters to use rather than passing functions into render_template function
 

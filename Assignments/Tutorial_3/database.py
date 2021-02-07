@@ -13,7 +13,27 @@ def get_all_posts():
                           ';PWD='+password)
 
     cursor = conn.cursor()
-    cursor.execute('SELECT [Handle],[Text],[Time] from Posts')
+    cursor.execute("""
+    SELECT
+        Posts.Handle,
+        Posts.Text,
+        Posts.Time,
+        Dogs.Name,
+        LikeCountQueryResult.LikeCount
+
+    FROM Posts 
+
+    INNER JOIN Dogs ON Posts.Handle = Dogs.Handle
+
+    INNER JOIN (
+        SELECT
+            Posts.Id, 
+            COUNT(Likes.Handle) AS LikeCount
+        FROM Posts
+        LEFT JOIN Likes
+            ON Posts.Id = Likes.PostId
+        GROUP BY Id) LikeCountQueryResult 
+    ON LikeCountQueryResult.Id = Posts.Id""")
 
     columns = [column[0] for column in cursor.description]
 
@@ -33,7 +53,7 @@ def get_posts_by_handle(handle):
                           ';PWD='+password)
 
     cursor = conn.cursor()
-    cursor.execute(f"SELECT * from Posts WHERE Handle = '{handle}'")
+    cursor.execute("SELECT * from Posts WHERE Handle = ?", handle)
 
     columns = [column[0] for column in cursor.description]
 
@@ -53,7 +73,7 @@ def get_dog_by_handle(handle):
                           ';PWD='+password)
 
     cursor = conn.cursor()
-    cursor.execute(f"SELECT * from Dogs WHERE Handle = '{handle}'")
+    cursor.execute("SELECT * from Dogs WHERE Handle = ?", handle)
 
     columns = [column[0] for column in cursor.description]
 

@@ -23,7 +23,7 @@
             <div class="content">
               <p>
                 <a href="{{ url_for('dog', handle=post['Handle']) }}">
-                  <strong>{{ get_dog_by_handle(post['Handle'])['Name'] }}</strong>
+                  <strong>{{ post['Name'] }}</strong>
                 </a> 
                 <small>@{{ post['Handle'] }}</small> 
                 <small>{{ post|datetime_filter }}</small>
@@ -45,7 +45,7 @@
                   <span class="icon is-small">
                     <i class="fas fa-heart" aria-hidden="true"></i>
                   </span>
-                  <!-- </span> &nbsp {{ post['Likes']|length }} -->
+                  </span> &nbsp {{ post['LikeCount'] }}
                 </a>
                 <div class="level-item">
                   <a> <!--add modal to this link-->
