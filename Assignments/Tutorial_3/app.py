@@ -1,29 +1,36 @@
 from flask import Flask, render_template
-from fake_data import *
+from datetime import datetime, timedelta
+from database import *
+
+import re
 
 app = Flask(__name__, template_folder="templates", static_url_path='/static')
 
 @app.route('/')
 def feed():
+    posts = get_all_posts()
+    handles = set([post["Handle"] for post in posts])
     return render_template('feed.html', 
                             posts=posts,
-                            handles=[post["handle"] for post in posts],
+                            handles=handles,
                             get_dog_by_handle=get_dog_by_handle)
     
 @app.route('/dog/<string:handle>')
 def dog(handle):
     dog = get_dog_by_handle(handle)
-    return render_template('dog.html', 
+    posts = get_posts_by_handle(handle)
+    handles = set([post["Handle"] for post in posts])
+    return render_template('dog.html',
                             dog=dog,
-                            handles=[post["handle"] for post in posts],
-                            posts=get_posts_by_handle(handle))
+                            handles=handles,
+                            posts=posts)
 
 # Register filters to use rather than passing functions into render_template function
 
 @app.template_filter('datetime_filter')
 def format_time(post, format="%m/%d/%Y, %H:%M:%S"):
     """Converts a post's time to appropriate format"""
-    time_posted = datetime.strptime(post["time"], '%m/%d/%Y, %H:%M:%S')
+    time_posted = datetime.strptime(post["Time"], '%m/%d/%Y, %H:%M:%S')
     time_now = datetime.now()
     time_since = time_now - time_posted
     if time_since < timedelta(minutes=1):
@@ -42,7 +49,7 @@ def format_time(post, format="%m/%d/%Y, %H:%M:%S"):
 @app.template_filter('like_filter')
 def format_likes(post):
     """Formats likers of a post to an appropriate string to display"""
-    likes = post["liked"]
+    likes = post["Likes"]
     if not likes:
         return ""
     elif len(likes) == 1:
