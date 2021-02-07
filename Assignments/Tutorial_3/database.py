@@ -1,9 +1,5 @@
 import pyodbc
-
-server = "tcp:dogchat-stan.database.windows.net"
-database = "dogchat"
-username = "stanwong"
-password = "Swong394!"
+from config import server, database, username, password
 
 def get_all_posts():
     
