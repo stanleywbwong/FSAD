@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+      
+      <h1 class="title">
+        DogChat
+      </h1>
+      <p class="subtitle">
+        My Feed
+      </p>
+
+
+
+    {% for post in posts %}
+      <div class="box">
+        <article class="media">
+          <div class="media-left">
+            <figure class="image is-64x64">
+              <img src="{{ url_for('static', filename=post['Handle']+'.png') }}" alt="Image">
+            </figure>
+          </div>
+          <div class="media-content">
+            <div class="content">
+              <p>
+                <a href="{{ url_for('dog', handle=post['Handle']) }}">
+                  <strong>{{ post['Name'] }}</strong>
+                </a> 
+                <small>@{{ post['Handle'] }}</small> 
+                <small>{{ post|datetime_filter }}</small>
+                <br>
+                {% for word in post['Text'].split(' ') %}
+                  {% if word[0] == '@' and word[1:] in handles %}
+                    <a href="{{ url_for('dog', handle=word[1:]) }}">
+                      @{{ word[1:] }}
+                    </a>
+                  {% else %}
+                    {{ word }}
+                  {% endif %}
+                {% endfor %}
+              </p>
+            </div>
+            <nav class="level is-mobile">
+              <div class="level-left">
+                <a class="level-item" aria-label="like">
+                  <span class="icon is-small">
+                    <i class="fas fa-heart" aria-hidden="true"></i>
+                  </span>
+                  </span> &nbsp {{ post['LikeCount']   }}
+                </a>
+                <div class="level-item">
+                  <a> <!--add modal to this link-->
+                    <span class="has-text-weight-normal">
+                      <!-- {{ post }} -->
+                    </span>
+                  </a>
+                </div>
+            </nav>
+          </div>
+        </article>
+      </div>
+    {% endfor %}
+
+{% endblock %}
+      
