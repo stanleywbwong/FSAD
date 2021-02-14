@@ -83,7 +83,7 @@ td.empty {
 }
 
 .menu-item:hover .dropdown {
-    height: 115px;
+    height: 145px;
     width: 112px;
     background-color: rgb(48, 54, 59);
     position: absolute;
