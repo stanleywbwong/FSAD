@@ -1,14 +1,15 @@
 import pyodbc
 from config import server, database, username, password
 
+conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+server+
+                        ';DATABASE='+database+
+                        ';UID='+username+
+                        ';PWD='+password)
+
+cursor = conn.cursor()
+
 def get_all_posts():
     
-    conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+server+
-                          ';DATABASE='+database+
-                          ';UID='+username+
-                          ';PWD='+password)
-
-    cursor = conn.cursor()
     cursor.execute("""
     SELECT
         Posts.Id,
@@ -18,7 +19,7 @@ def get_all_posts():
         Dogs.Name,
         LikeCountQueryResult.LikeCount
 
-    FROM Posts 
+    FROM Posts
 
     INNER JOIN Dogs ON Posts.Handle = Dogs.Handle
 
@@ -30,7 +31,9 @@ def get_all_posts():
         LEFT JOIN Likes
             ON Posts.Id = Likes.PostId
         GROUP BY Id) LikeCountQueryResult 
-    ON LikeCountQueryResult.Id = Posts.Id""")
+    ON LikeCountQueryResult.Id = Posts.Id
+    
+    ORDER BY Posts.Time DESC""")
 
     columns = [column[0] for column in cursor.description]
 
@@ -44,13 +47,7 @@ def get_all_posts():
 
 def get_posts_by_handle(handle):
     
-    conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+server+
-                          ';DATABASE='+database+
-                          ';UID='+username+
-                          ';PWD='+password)
-
-    cursor = conn.cursor()
-    cursor.execute("SELECT * from Posts WHERE Handle = ?", handle)
+    cursor.execute("SELECT * from Posts WHERE Handle = ? ORDER BY Posts.Time DESC", handle)
 
     columns = [column[0] for column in cursor.description]
 
@@ -64,12 +61,6 @@ def get_posts_by_handle(handle):
 
 def get_dog_by_handle(handle):
 
-    conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+server+
-                          ';DATABASE='+database+
-                          ';UID='+username+
-                          ';PWD='+password)
-
-    cursor = conn.cursor()
     cursor.execute("SELECT * from Dogs WHERE Handle = ?", handle)
 
     columns = [column[0] for column in cursor.description]
@@ -87,25 +78,14 @@ def get_dog_by_handle(handle):
 
 def insert_post(handle, post_content, time):
 
-    conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+server+
-                          ';DATABASE='+database+
-                          ';UID='+username+
-                          ';PWD='+password)
-
-    cursor = conn.cursor()
-    result = cursor.execute("""INSERT INTO Posts ([Handle], [Text], [Time])
+    cursor.execute("""INSERT INTO Posts ([Handle], [Text], [Time])
                         VALUES (?, ?, ?)""", handle, post_content, time)
     
     conn.commit()
     return True
 
 def delete_post(post_id, handle):
-    conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+server+
-                          ';DATABASE='+database+
-                          ';UID='+username+
-                          ';PWD='+password)
 
-    cursor = conn.cursor()
     result = cursor.execute("DELETE FROM POSTS WHERE ID = ? AND Handle = ?", post_id, handle)
     
     conn.commit()

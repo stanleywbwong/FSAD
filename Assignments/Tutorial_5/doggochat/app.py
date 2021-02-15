@@ -46,8 +46,7 @@ def dog(handle):
 @auth.login_required
 def create():
     post_content = request.form['post-content']
-    current_time = datetime.strftime(datetime.now(), '%m/%d/%Y, %H:%M:%S')
-    insert_post(auth.current_user(), post_content, current_time)
+    insert_post(auth.current_user(), post_content, datetime.now())
     return redirect(url_for('feed'))
 
 @app.route('/delete')
@@ -74,7 +73,8 @@ def logout():
 @app.template_filter('datetime_filter')
 def format_time(post, format="%m/%d/%Y, %H:%M:%S"):
     """Converts a post's time to appropriate format"""
-    time_posted = datetime.strptime(post["Time"], '%m/%d/%Y, %H:%M:%S')
+    time_posted = post["Time"]
+    #time_posted = datetime.strptime(post["Time"], '%m/%d/%Y, %H:%M:%S')
     time_now = datetime.now()
     time_since = time_now - time_posted
     if time_since < timedelta(minutes=1):
