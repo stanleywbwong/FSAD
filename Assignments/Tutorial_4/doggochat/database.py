@@ -11,6 +11,7 @@ def get_all_posts():
     cursor = conn.cursor()
     cursor.execute("""
     SELECT
+        Posts.Id,
         Posts.Handle,
         Posts.Text,
         Posts.Time,
@@ -83,3 +84,29 @@ def get_dog_by_handle(handle):
         return results[0]
 
     return None
+
+def insert_post(handle, post_content, time):
+
+    conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+server+
+                          ';DATABASE='+database+
+                          ';UID='+username+
+                          ';PWD='+password)
+
+    cursor = conn.cursor()
+    result = cursor.execute("""INSERT INTO Posts ([Handle], [Text], [Time])
+                        VALUES (?, ?, ?)""", handle, post_content, time)
+    
+    conn.commit()
+    return True
+
+def delete_post(post_id, handle):
+    conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+server+
+                          ';DATABASE='+database+
+                          ';UID='+username+
+                          ';PWD='+password)
+
+    cursor = conn.cursor()
+    result = cursor.execute("DELETE FROM POSTS WHERE ID = ? AND Handle = ?", post_id, handle)
+    
+    conn.commit()
+    return True
