@@ -32,9 +32,9 @@
               Feed
             </a>
 
-            <a class="navbar-item">
-                My Profile
-              </a>
+            <a class="navbar-item" href="{{url_for('dog', handle=user)}}">
+                {{ user }}
+            </a>
       
             <!-- <div class="navbar-item has-dropdown is-hoverable">
               <a class="navbar-link">
@@ -65,8 +65,8 @@
                 <a class="button is-primary">
                   <strong>Sign up</strong>
                 </a>
-                <a class="button is-light">
-                  Log in
+                <a class="button is-light" href="{{ url_for('logout') }}">
+                  Logout
                 </a>
               </div>
             </div>
