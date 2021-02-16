@@ -39,9 +39,8 @@ def get_all_posts():
     return posts
 
 def get_posts_by_handle(handle):
-    cursor.execute("SELECT * from Posts WHERE Handle = ? ORDER BY Posts.Time DESC", handle)
-    columns = [column[0] for column in cursor.description]
-    posts = [dict(zip(columns, row)) for row in cursor]
+    all_posts = get_all_posts()
+    posts = [post for post in all_posts if post['Handle'] == handle]
     return posts
 
 def get_dog_by_handle(handle):
@@ -63,5 +62,15 @@ def insert_post(handle, post_content, time):
 
 def delete_post(post_id, handle):
     cursor.execute("DELETE FROM Posts WHERE ID = ? AND Handle = ?", post_id, handle)
+    conn.commit()
+    return True
+
+def like_unlike(post_id, handle):
+    cursor.execute("SELECT * FROM Likes WHERE PostId = ? AND Handle = ?", post_id, handle)
+    row = cursor.fetchone()
+    if row:
+        cursor.execute("DELETE FROM Likes WHERE PostId = ? AND Handle = ?", post_id, handle)
+    else:
+        cursor.execute("INSERT INTO Likes ([Handle], [PostId]) VALUES (?, ?)", handle, post_id)
     conn.commit()
     return True

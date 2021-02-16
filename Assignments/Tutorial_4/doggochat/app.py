@@ -18,21 +18,24 @@ def verify_password(username, password):
 @app.route('/feed')
 @auth.login_required
 def feed():
+    user = get_dog_by_handle(auth.current_user())
     posts = get_all_posts()
     handles = set([post["Handle"] for post in posts])
-    return render_template('feed.html', 
+    return render_template('feed.html',
+                            user=user,
                             posts=posts,
-                            handles=handles,
-                            user=auth.current_user())
+                            handles=handles)
 
 @app.route('/dog/<string:handle>')
 @auth.login_required
 def dog(handle):
     dog = get_dog_by_handle(handle)
+    user = get_dog_by_handle(auth.current_user())
     posts = get_posts_by_handle(handle)
     handles = set([post["Handle"] for post in posts])
     return render_template('dog.html',
                             dog=dog,
+                            user=user,
                             posts=posts,
                             handles=handles)
 
@@ -40,15 +43,37 @@ def dog(handle):
 @auth.login_required
 def create():
     post_content = request.form['post-content']
+    page = request.form['page']
     insert_post(auth.current_user(), post_content, datetime.now())
-    return redirect(url_for('feed'))
+    if page == 'feed':
+        return redirect(url_for(page))
+    elif page == 'dog':
+        handle = request.form['handle']
+        return redirect(url_for(page, handle=handle))
+
+@app.route('/change_like', methods=['POST'])
+@auth.login_required
+def change_like():
+    post_id = request.form['post-id']
+    page = request.form['page']
+    like_unlike(post_id, auth.current_user())
+    if page == 'feed':
+        return redirect(url_for(page))
+    elif page == 'dog':
+        handle = request.form['handle']
+        return redirect(url_for(page, handle=handle))
 
 @app.route('/delete')
 @auth.login_required
 def delete():
     post_id = request.args.get('post_id')
+    page = request.args.get['page']
     delete_post(post_id, auth.current_user())
-    return redirect(url_for('feed'))
+    if page == 'feed':
+        return redirect(url_for(page))
+    elif page == 'dog':
+        handle = request.args.get['handle']
+        return redirect(url_for(page, handle=handle))
 
 @app.route('/')
 @auth.login_required(optional=True)
@@ -68,7 +93,6 @@ def logout():
 def format_time(post, format="%m/%d/%Y, %H:%M:%S"):
     """Converts a post's time to appropriate format"""
     time_posted = post["Time"]
-    #time_posted = datetime.strptime(post["Time"], '%m/%d/%Y, %H:%M:%S')
     time_now = datetime.now()
     time_since = time_now - time_posted
     if time_since < timedelta(minutes=1):

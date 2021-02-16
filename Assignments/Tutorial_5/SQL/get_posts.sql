@@ -6,16 +6,17 @@
 --     ('rose', 'Today I stole food from a blind dog.', '20181212 04:42:20')
 
 -- DROP TABLE Posts
--- SELECT * FROM Posts
+SELECT * FROM Posts
 
 SELECT
+    Posts.Id,
     Posts.Handle,
     Posts.Text,
     Posts.Time,
     Dogs.Name,
     LikeCountQueryResult.LikeCount
 
-FROM Posts 
+FROM Posts
 
 INNER JOIN Dogs ON Posts.Handle = Dogs.Handle
 
@@ -29,8 +30,11 @@ INNER JOIN (
     GROUP BY Id) LikeCountQueryResult 
     ON LikeCountQueryResult.Id = Posts.Id
 
+WHERE Posts.Handle = 'melba'
+ORDER BY Posts.Time DESC
 
--- SELECT * from Likes
+
+SELECT * from Likes
 
 -- INSERT INTO Likes ([Handle], [PostId])
 -- VALUES 

@@ -16,6 +16,7 @@
                 <small>@{{ user['Handle'] }}</small>
                 <br>
                 <form action="/create" method="POST">
+                  <input type="hidden" name="page" value="feed">
                   <div class="field">
                     <label class="label">Message</label>
                     <div class="control">
@@ -55,7 +56,7 @@
                   <small>@{{ post['Handle'] }}</small> 
                   <small>{{ post|datetime_filter }}</small>
                   {% if post['Handle'] == user['Handle'] %}
-                  <small>(<a style="color: red;" href="{{ url_for('delete', post_id=post['Id']) }}">delete</a>)</small>
+                  <small>(<a style="color: red;" href="{{ url_for('delete', post_id=post['Id'], page='feed') }}">delete</a>)</small>
                   {% endif %}
                   <br>
                   {% for word in post['Text'].split(' ') %}
@@ -72,18 +73,26 @@
               <nav class="level is-mobile">
                 <div class="level-left">
                   <a class="level-item" aria-label="like">
-                    <span class="icon is-small">
-                      <i class="fas fa-heart" aria-hidden="true"></i>
-                    </span>
-                    </span> &nbsp {{ post['LikeCount']   }}
+                    <form action="/change_like" method="POST">
+                      <input type="hidden" name="post-id" value="{{ post['Id'] }}">
+                      <input type="hidden" name="page" value="feed">
+                      <div class="control">
+                        <button class="button is-link is-small is-light is-rounded">
+                          <span class="icon is-small">
+                            <i class="fas fa-heart" aria-hidden="true"></i>
+                          </span>
+                        </button>
+                      </div>
+                    </form>         
+                    &nbsp {{ post['LikeCount'] }}
                   </a>
                   <div class="level-item">
                     <a> <!--add modal to this link-->
                       <span class="has-text-weight-normal">
-                        <!-- {{ post }} -->
+                        <!-- reformat using like_filter {{ post }} -->
                       </span>
                     </a>
-                  </div>
+                </div>
               </nav>
             </div>
           </article>
