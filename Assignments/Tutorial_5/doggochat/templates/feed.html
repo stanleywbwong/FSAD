@@ -6,14 +6,14 @@
         <article class="media">
           <div class="media-left">
             <figure class="image is-64x64">
-              <img src="{{ url_for('static', filename=user+'.png') }}" alt="Image">
+              <img src="{{ url_for('static', filename=user['Handle']+'.png') }}" alt="Image">
             </figure>
           </div>
           <div class="media-content">
             <div class="content">
               <p>
                 <strong>New Post</strong>
-                <small>@{{ user }}</small>
+                <small>@{{ user['Handle'] }}</small>
                 <br>
                 <form action="/create" method="POST">
                   <div class="field">
@@ -54,7 +54,7 @@
                   </a> 
                   <small>@{{ post['Handle'] }}</small> 
                   <small>{{ post|datetime_filter }}</small>
-                  {% if post['Handle'] == user %}
+                  {% if post['Handle'] == user['Handle'] %}
                   <small>(<a style="color: red;" href="{{ url_for('delete', post_id=post['Id']) }}">delete</a>)</small>
                   {% endif %}
                   <br>

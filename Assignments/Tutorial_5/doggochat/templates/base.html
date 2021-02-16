@@ -32,8 +32,8 @@
               Feed
             </a>
 
-            <a class="navbar-item" href="{{url_for('dog', handle=user)}}">
-                {{ user }}
+            <a class="navbar-item" href="{{url_for('dog', handle=user['Handle'])}}">
+                {{ user['Name'] }}
             </a>
       
             <!-- <div class="navbar-item has-dropdown is-hoverable">

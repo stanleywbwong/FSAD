@@ -18,12 +18,13 @@ def verify_password(username, password):
 @app.route('/feed')
 @auth.login_required
 def feed():
+    dog = get_dog_by_handle(auth.current_user())
     posts = get_all_posts()
     handles = set([post["Handle"] for post in posts])
-    return render_template('feed.html', 
+    return render_template('feed.html',
+                            user=dog,
                             posts=posts,
-                            handles=handles,
-                            user=auth.current_user())
+                            handles=handles)
 
 @app.route('/dog/<string:handle>')
 @auth.login_required
