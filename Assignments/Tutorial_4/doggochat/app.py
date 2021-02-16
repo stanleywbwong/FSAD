@@ -67,12 +67,12 @@ def change_like():
 @auth.login_required
 def delete():
     post_id = request.args.get('post_id')
-    page = request.args.get['page']
+    page = request.args.get('page')
     delete_post(post_id, auth.current_user())
     if page == 'feed':
         return redirect(url_for(page))
     elif page == 'dog':
-        handle = request.args.get['handle']
+        handle = request.args.get('handle')
         return redirect(url_for(page, handle=handle))
 
 @app.route('/')
