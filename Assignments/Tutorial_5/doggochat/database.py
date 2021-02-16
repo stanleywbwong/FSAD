@@ -9,7 +9,6 @@ conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+server+
 cursor = conn.cursor()
 
 def get_all_posts():
-    
     cursor.execute("""
     SELECT
         Posts.Id,
@@ -36,57 +35,33 @@ def get_all_posts():
     ORDER BY Posts.Time DESC""")
 
     columns = [column[0] for column in cursor.description]
-
-    results = []
-
-    for row in cursor:
-        d = dict(zip(columns, row))
-        results.append(d)
-
-    return results
+    posts = [dict(zip(columns, row)) for row in cursor]
+    return posts
 
 def get_posts_by_handle(handle):
-    
     cursor.execute("SELECT * from Posts WHERE Handle = ? ORDER BY Posts.Time DESC", handle)
-
     columns = [column[0] for column in cursor.description]
-
-    results = []
-
-    for row in cursor:
-        d = dict(zip(columns, row))
-        results.append(d)
-
-    return results
+    posts = [dict(zip(columns, row)) for row in cursor]
+    return posts
 
 def get_dog_by_handle(handle):
-
     cursor.execute("SELECT * from Dogs WHERE Handle = ?", handle)
-
     columns = [column[0] for column in cursor.description]
+    row = cursor.fetchone()
+    return dict(zip(columns, row)) if row else None
 
-    results = []
-
-    for row in cursor:
-        d = dict(zip(columns, row))
-        results.append(d)
-
-    if len(results):
-        return results[0]
-
-    return None
+def get_password(username):
+    cursor.execute("SELECT Dogs.Password FROM Dogs WHERE Handle = ?", username)
+    row = cursor.fetchone()
+    return row[0] if row else None
 
 def insert_post(handle, post_content, time):
-
     cursor.execute("""INSERT INTO Posts ([Handle], [Text], [Time])
                         VALUES (?, ?, ?)""", handle, post_content, time)
-    
     conn.commit()
     return True
 
 def delete_post(post_id, handle):
-
-    result = cursor.execute("DELETE FROM POSTS WHERE ID = ? AND Handle = ?", post_id, handle)
-    
+    cursor.execute("DELETE FROM Posts WHERE ID = ? AND Handle = ?", post_id, handle)
     conn.commit()
     return True

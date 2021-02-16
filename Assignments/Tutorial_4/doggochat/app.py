@@ -9,16 +9,10 @@ import re
 app = Flask(__name__, template_folder="templates", static_url_path='/static')
 auth = HTTPBasicAuth()
 
-users = {
-    "melba": generate_password_hash("melba"),
-    "rose": generate_password_hash("rose"),
-    "chucky": generate_password_hash("chucky") 
-}
-
 @auth.verify_password
 def verify_password(username, password):
-    if username in users and \
-            check_password_hash(users.get(username), password):
+    db_password = get_password(username)
+    if db_password and check_password_hash(db_password, password):
         return username
 
 @app.route('/feed')
@@ -46,8 +40,7 @@ def dog(handle):
 @auth.login_required
 def create():
     post_content = request.form['post-content']
-    current_time = datetime.strftime(datetime.now(), '%m/%d/%Y, %H:%M:%S')
-    insert_post(auth.current_user(), post_content, current_time)
+    insert_post(auth.current_user(), post_content, datetime.now())
     return redirect(url_for('feed'))
 
 @app.route('/delete')
@@ -74,7 +67,8 @@ def logout():
 @app.template_filter('datetime_filter')
 def format_time(post, format="%m/%d/%Y, %H:%M:%S"):
     """Converts a post's time to appropriate format"""
-    time_posted = datetime.strptime(post["Time"], '%m/%d/%Y, %H:%M:%S')
+    time_posted = post["Time"]
+    #time_posted = datetime.strptime(post["Time"], '%m/%d/%Y, %H:%M:%S')
     time_now = datetime.now()
     time_since = time_now - time_posted
     if time_since < timedelta(minutes=1):

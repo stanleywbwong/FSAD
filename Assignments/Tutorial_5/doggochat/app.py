@@ -9,16 +9,10 @@ import re
 app = Flask(__name__, template_folder="templates", static_url_path='/static')
 auth = HTTPBasicAuth()
 
-users = {
-    "melba": generate_password_hash("melba"),
-    "rose": generate_password_hash("rose"),
-    "chucky": generate_password_hash("chucky") 
-}
-
 @auth.verify_password
 def verify_password(username, password):
-    if username in users and \
-            check_password_hash(users.get(username), password):
+    db_password = get_password(username)
+    if db_password and check_password_hash(db_password, password):
         return username
 
 @app.route('/feed')
