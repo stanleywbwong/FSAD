@@ -16,6 +16,7 @@ def get_all_posts():
         Posts.Text,
         Posts.Time,
         Dogs.Name,
+        Dogs.AvatarImageName,
         LikeCountQueryResult.LikeCount
 
     FROM Posts
@@ -36,6 +37,8 @@ def get_all_posts():
 
     columns = [column[0] for column in cursor.description]
     posts = [dict(zip(columns, row)) for row in cursor]
+    for post in posts:
+        post['AvatarImageName'] = 'https://doggochatstorage.blob.core.windows.net/dogavatars/' + post['AvatarImageName']
     return posts
 
 def get_posts_by_handle(handle):
@@ -72,5 +75,16 @@ def like_unlike(post_id, handle):
         cursor.execute("DELETE FROM Likes WHERE PostId = ? AND Handle = ?", post_id, handle)
     else:
         cursor.execute("INSERT INTO Likes ([Handle], [PostId]) VALUES (?, ?)", handle, post_id)
+    conn.commit()
+    return True
+
+def create_user(username, name, bio, age, password, image):
+    cursor.execute("""INSERT INTO Dogs ([Handle], [Name], [Bio], [Age], [Password], [AvatarImageName])
+                    VALUES (?, ?, ?, ?, ?, ?)""", username, name, bio, age, password, image)
+    conn.commit()
+    return True
+
+def reset_db_password(username, password):
+    cursor.execute("UPDATE Dogs SET [Password] = ? WHERE [Handle] = ?", password, username)
     conn.commit()
     return True

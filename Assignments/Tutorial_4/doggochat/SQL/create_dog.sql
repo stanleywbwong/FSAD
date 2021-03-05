@@ -8,8 +8,25 @@ CREATE TABLE [dbo].[Dogs] (
 ALTER TABLE [dbo].[Dogs]
 ALTER COLUMN [Password] [varchar](100) NOT NULL
 
+ALTER TABLE [dbo].[Dogs]
+ADD [AvatarImageName] [varchar](50)
+
+ALTER TABLE [dbo].[Dogs]
+ADD [Email] [varchar](50)
+
+
+
 UPDATE [dbo].[Dogs]
 SET [Password] = 'pbkdf2:sha256:150000$p3XX5E60$738e098d4aab8a006c545e5e2b35bb0ca826193bac4edfb66ad14b788f4b9455'
 WHERE [Handle] = 'chucky'
+
+UPDATE Dogs
+SET [AvatarImageName] = 'melba.png'
+WHERE [Handle] = 'melba'
+
+UPDATE Dogs
+SET [Email] = 'swong394@gmail.com'
+
+DELETE FROM Dogs WHERE [Handle] = 'grover'
 
 SELECT * FROM Dogs

@@ -14,6 +14,7 @@ SELECT
     Posts.Text,
     Posts.Time,
     Dogs.Name,
+    Dogs.AvatarImageName,
     LikeCountQueryResult.LikeCount
 
 FROM Posts
@@ -30,7 +31,6 @@ INNER JOIN (
     GROUP BY Id) LikeCountQueryResult 
     ON LikeCountQueryResult.Id = Posts.Id
 
-WHERE Posts.Handle = 'melba'
 ORDER BY Posts.Time DESC
 
 

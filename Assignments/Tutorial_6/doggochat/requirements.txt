@@ -1,3 +1,7 @@
 Flask>=1.0,<=1.1.2
 pyodbc
 flask-httpauth
+flask-login
+flask-wtf
+azure-storage-blob
+sendgrid
